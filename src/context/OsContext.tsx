@@ -2,6 +2,7 @@
 
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { AppId } from '@/data/profile';
+import { usePortfolioData } from '@/context/PortfolioDataContext';
 
 export type WindowAppId = Exclude<AppId, 'home'>;
 
@@ -94,6 +95,7 @@ interface OsContextValue {
 const OsContext = createContext<OsContextValue | null>(null);
 
 export function OsProvider({ children }: { children: React.ReactNode }) {
+  const { setAdminPassword } = usePortfolioData();
   const [windows, setWindows] = useState<Record<WindowAppId, OsWindowInstance>>(createInitialWindows);
   const [isLocked, setIsLocked] = useState(false);
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
@@ -283,19 +285,21 @@ export function OsProvider({ children }: { children: React.ReactNode }) {
   const loginAdmin = useCallback(
     (password: string) => {
       if (password === 'Baihaqi123!@#') {
+        setAdminPassword(password);
         setIsAdminAuthenticated(true);
         openApp('admin');
         return true;
       }
       return false;
     },
-    [openApp]
+    [openApp, setAdminPassword]
   );
 
   const logoutAdmin = useCallback(() => {
+    setAdminPassword(null);
     setIsAdminAuthenticated(false);
     closeWindow('admin');
-  }, [closeWindow]);
+  }, [closeWindow, setAdminPassword]);
 
   const openLauncher = useCallback(() => {
     if (!isLocked) setIsLauncherOpen(true);

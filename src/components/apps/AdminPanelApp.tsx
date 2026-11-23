@@ -14,6 +14,7 @@ export function AdminPanelApp() {
   const { isAdminAuthenticated, logoutAdmin, openApp, settings } = useOs();
   const {
     data,
+    cloudSyncStatus,
     updateProfile,
     setCompetencies,
     addProject,
@@ -375,7 +376,13 @@ export function AdminPanelApp() {
       <WindowTitleBar
         appId="admin"
         title="root@linux-os:/admin — Control Panel"
-        badgeText="Root Active"
+        badgeText={
+          cloudSyncStatus === 'synced'
+            ? 'Cloudflare KV: Synced'
+            : cloudSyncStatus === 'saving'
+              ? 'Saving to KV...'
+              : 'Local Mode (KV Opsional)'
+        }
         rightSlot={
           <div className="flex items-center gap-gutter-xs">
             <button

@@ -1,10 +1,17 @@
 {
   "name": "baihaqi-os-portfolio",
+  "main": "worker/index.ts",
   "compatibility_date": "2025-02-24",
   "assets": {
     "directory": "./out",
+    "binding": "ASSETS",
     "not_found_handling": "404-page"
   },
+  // Setelah menjalankan `npx wrangler kv namespace create PORTFOLIO_KV`,
+  // tempelkan blok ini dengan ID namespace Anda agar data Admin Panel tersimpan di Cloudflare KV:
+  // "kv_namespaces": [
+  //   { "binding": "PORTFOLIO_KV", "id": "<PASTE_KV_NAMESPACE_ID>" }
+  // ],
   "observability": {
     "enabled": true,
     "traces": {

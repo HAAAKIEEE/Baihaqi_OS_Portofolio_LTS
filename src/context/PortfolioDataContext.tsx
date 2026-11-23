@@ -39,8 +39,12 @@ function getDefaultState(): PortfolioDataState {
   };
 }
 
+export type CloudSyncStatus = 'idle' | 'saving' | 'synced' | 'local-only' | 'error';
+
 interface PortfolioDataContextValue {
   data: PortfolioDataState;
+  cloudSyncStatus: CloudSyncStatus;
+  setAdminPassword: (password: string | null) => void;
   updateProfile: (partial: Partial<EditableProfile>) => void;
   updateEducation: (partial: Partial<EditableEducation>) => void;
   setCompetencies: (items: string[]) => void;
@@ -65,13 +69,15 @@ const PortfolioDataContext = createContext<PortfolioDataContextValue | null>(nul
 export function PortfolioDataProvider({ children }: { children: React.ReactNode }) {
   const [data, setData] = useState<PortfolioDataState>(getDefaultState);
   const [hydrated, setHydrated] = useState(false);
+  const [adminPassword, setAdminPassword] = useState<string | null>(null);
+  const [cloudSyncStatus, setCloudSyncStatus] = useState<CloudSyncStatus>('idle');
 
   useEffect(() => {
+    const defaults = getDefaultState();
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as Partial<PortfolioDataState>;
-        const defaults = getDefaultState();
         setData({
           profile: { ...defaults.profile, ...(parsed.profile ?? {}) },
           projects: Array.isArray(parsed.projects) ? parsed.projects : defaults.projects,
@@ -86,9 +92,41 @@ export function PortfolioDataProvider({ children }: { children: React.ReactNode 
       }
     } catch {
       // Ignore corrupt localStorage and keep defaults
-    } finally {
-      setHydrated(true);
     }
+
+    fetch('/api/portfolio')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((payload: { storage?: string; data?: Partial<PortfolioDataState> | null } | null) => {
+        if (!payload) {
+          setCloudSyncStatus('local-only');
+          return;
+        }
+        if (payload.storage === 'cloudflare-kv') {
+          setCloudSyncStatus('synced');
+        } else {
+          setCloudSyncStatus('local-only');
+        }
+        if (payload.data) {
+          const remote = payload.data;
+          setData({
+            profile: { ...defaults.profile, ...(remote.profile ?? {}) },
+            projects: Array.isArray(remote.projects) ? remote.projects : defaults.projects,
+            hiddenGitHubIds: Array.isArray(remote.hiddenGitHubIds) ? remote.hiddenGitHubIds : [],
+            experiences: Array.isArray(remote.experiences) ? remote.experiences : defaults.experiences,
+            education: { ...defaults.education, ...(remote.education ?? {}) },
+            competencies: Array.isArray(remote.competencies) ? remote.competencies : defaults.competencies,
+            skillPillars: Array.isArray(remote.skillPillars) ? remote.skillPillars : defaults.skillPillars,
+            skills: Array.isArray(remote.skills) ? remote.skills : defaults.skills,
+            workflows: Array.isArray(remote.workflows) ? remote.workflows : defaults.workflows,
+          });
+        }
+      })
+      .catch(() => {
+        setCloudSyncStatus('local-only');
+      })
+      .finally(() => {
+        setHydrated(true);
+      });
   }, []);
 
   useEffect(() => {
@@ -98,7 +136,30 @@ export function PortfolioDataProvider({ children }: { children: React.ReactNode 
     } catch {
       // Ignore quota errors
     }
-  }, [data, hydrated]);
+
+    if (!adminPassword) return;
+    setCloudSyncStatus('saving');
+    fetch('/api/portfolio', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-password': adminPassword,
+      },
+      body: JSON.stringify(data),
+    })
+      .then((res) => {
+        if (res.ok) {
+          setCloudSyncStatus('synced');
+        } else if (res.status === 503 || res.status === 404) {
+          setCloudSyncStatus('local-only');
+        } else {
+          setCloudSyncStatus('error');
+        }
+      })
+      .catch(() => {
+        setCloudSyncStatus('local-only');
+      });
+  }, [data, hydrated, adminPassword]);
 
   const updateProfile = useCallback((partial: Partial<EditableProfile>) => {
     setData((prev) => ({ ...prev, profile: { ...prev.profile, ...partial } }));
@@ -224,6 +285,8 @@ export function PortfolioDataProvider({ children }: { children: React.ReactNode 
     <PortfolioDataContext.Provider
       value={{
         data,
+        cloudSyncStatus,
+        setAdminPassword,
         updateProfile,
         updateEducation,
         setCompetencies,
