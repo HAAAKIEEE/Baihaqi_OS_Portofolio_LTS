@@ -186,7 +186,9 @@ export function FileManagerApp() {
               type="button"
               onClick={() => {
                 setFilter('all');
-                setSelectedCaseStudyId('autoflow');
+                if (combinedProjects[0]) {
+                  setSelectedCaseStudyId(combinedProjects[0].id);
+                }
               }}
               className="flex items-center gap-gutter-sm px-gutter-sm py-gutter-sm rounded text-dark-on-surface-variant hover:bg-dark-surface-container-high/60 hover:text-dark-on-surface font-body text-body-md text-left transition-colors duration-state-change"
             >
@@ -202,7 +204,7 @@ export function FileManagerApp() {
               Workspace Volume
             </span>
             <span data-design-text-token="mono-md" className="font-mono text-label-sm text-dark-primary tabular-nums">
-              {githubLoading ? 'Syncing GitHub...' : `${githubProjects.length} GitHub • ${PROJECTS.length} Pilihan`}
+              {githubLoading ? 'Syncing GitHub...' : `${githubProjects.length} Repo GitHub`}
             </span>
             <a
               href={PROFILE_INFO.githubUrl}
@@ -218,7 +220,14 @@ export function FileManagerApp() {
         {/* Right Content: Project Folders Grid & Case Study Preview */}
         <div className="lg:col-span-9 p-gutter-lg flex flex-col gap-gutter-lg lg:overflow-y-auto os-scroll">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-gutter-md items-stretch">
-            {visibleProjects.map((project) => {
+            {visibleProjects.length === 0 ? (
+              <div className="sm:col-span-2 p-gutter-xl rounded-lg bg-dark-surface-container-low/80 border border-dark-outline-variant/50 text-center font-mono text-mono-md text-dark-on-surface-variant">
+                {githubLoading
+                  ? 'Menarik repositori dari github.com/HAAAKIEEE...'
+                  : 'Belum ada proyek pada kategori ini.'}
+              </div>
+            ) : (
+              visibleProjects.map((project) => {
               const isSelected = project.id === selectedStudy?.id;
               const isAi = project.category === 'ai';
               return (
@@ -267,7 +276,8 @@ export function FileManagerApp() {
                   </p>
                 </button>
               );
-            })}
+            })
+            )}
           </div>
 
           {/* Selected Case Study README Inspector */}

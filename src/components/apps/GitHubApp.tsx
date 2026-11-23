@@ -95,7 +95,12 @@ export function GitHubApp() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-gutter-md items-stretch">
-            {repos.map((repo) => (
+            {repos.length === 0 ? (
+              <div className="sm:col-span-2 p-gutter-xl rounded-lg bg-dark-surface-container-low/80 border border-dark-outline-variant/50 text-center font-mono text-mono-md text-dark-on-surface-variant">
+                Memuat repositori dari github.com/HAAAKIEEE...
+              </div>
+            ) : (
+              repos.map((repo) => (
               <a
                 key={repo.name}
                 href={repo.url}
@@ -118,7 +123,8 @@ export function GitHubApp() {
                   {repo.meta}
                 </span>
               </a>
-            ))}
+            ))
+            )}
           </div>
         </div>
 

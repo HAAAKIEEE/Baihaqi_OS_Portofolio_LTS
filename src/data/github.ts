@@ -15,50 +15,13 @@ export interface GitCommit {
 }
 
 export const GITHUB_STATS = {
-  contributions: '1,240+ Kontribusi',
-  contributionsMobile: '1,240+ Commits',
-  totalStars: '490+ Stars',
-  publicRepos: '28 Public Repos',
+  contributions: 'GitHub Live',
+  contributionsMobile: 'GitHub Live',
+  totalStars: '0 Stars',
+  publicRepos: '0 Public Repos',
 };
 
-export const PINNED_REPOS: GitHubRepo[] = [
-  {
-    name: 'n8n-ai-agent-starter',
-    stars: 184,
-    description:
-      'Template produksi agen LLM dan router webhook untuk alur kerja otomasi n8n.',
-    mobileDescription: 'Template agen LLM & webhook router n8n.',
-    meta: 'TypeScript • MIT',
-    url: 'https://github.com/HAAAKIEEE/',
-  },
-  {
-    name: 'nextjs-linux-portfolio',
-    stars: 142,
-    description:
-      'Antarmuka portofolio interaktif bergaya desktop Linux dengan sistem jendela kaca.',
-    mobileDescription: 'Portofolio interaktif bergaya desktop Linux.',
-    meta: 'TypeScript • Next.js',
-    url: 'https://github.com/HAAAKIEEE/Baihaqi_OS_Portofolio_LTS',
-  },
-  {
-    name: 'pgvector-rag-kit',
-    stars: 96,
-    description:
-      'Toolkit FastAPI & PostgreSQL pgvector untuk pencarian semantik dokumen perusahaan.',
-    mobileDescription: 'Toolkit FastAPI & pgvector untuk pencarian dokumen.',
-    meta: 'Python • FastAPI',
-    url: 'https://github.com/HAAAKIEEE/',
-  },
-  {
-    name: 'arch-hyprland-dotfiles',
-    stars: 68,
-    description:
-      'Konfigurasi Wayland, Zsh, dan Neovim untuk lingkungan kerja Linux yang cepat dan rapi.',
-    mobileDescription: 'Konfigurasi Wayland, Zsh, dan Neovim untuk Linux.',
-    meta: 'Shell • Wayland',
-    url: 'https://github.com/HAAAKIEEE/',
-  },
-];
+export const PINNED_REPOS: GitHubRepo[] = [];
 
 export const RECENT_COMMITS: GitCommit[] = [
   {

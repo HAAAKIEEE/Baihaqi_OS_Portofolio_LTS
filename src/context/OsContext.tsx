@@ -95,7 +95,7 @@ export function OsProvider({ children }: { children: React.ReactNode }) {
   const [aiSearchQuery, setAiSearchQuery] = useState(
     'Apa saja proyek otomasi AI yang pernah dibangun Baihaqi?'
   );
-  const [selectedCaseStudyId, setSelectedCaseStudyId] = useState('autoflow');
+  const [selectedCaseStudyId, setSelectedCaseStudyId] = useState('');
   const [settings, setSettings] = useState<OsSettings>({
     glassmorphism: true,
     showDesktopStats: true,
