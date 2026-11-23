@@ -21,9 +21,9 @@ export function AboutApp() {
         badgeText={PROFILE_INFO.availabilityLabel}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-12">
+      <div className="grid grid-cols-1 lg:grid-cols-12 lg:flex-1 lg:min-h-0 lg:overflow-hidden">
         {/* Left Profile Summary */}
-        <aside className="lg:col-span-4 p-gutter-lg sm:p-gutter-xl bg-dark-surface-container/50 border-b lg:border-b-0 lg:border-r border-dark-outline-variant/40 flex flex-col justify-between gap-gutter-lg">
+        <aside className="lg:col-span-4 p-gutter-lg sm:p-gutter-xl bg-dark-surface-container/50 border-b lg:border-b-0 lg:border-r border-dark-outline-variant/40 flex flex-col justify-start gap-gutter-lg lg:overflow-y-auto os-scroll">
           <div className="flex flex-col gap-gutter-md">
             <div className="flex lg:flex-col items-center lg:items-start gap-gutter-md">
               <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-b from-dark-primary-container/30 to-dark-surface-container-high border border-dark-primary/50 overflow-hidden shrink-0 shadow-md">
@@ -86,7 +86,7 @@ export function AboutApp() {
         </aside>
 
         {/* Right Experience, Education & Competencies */}
-        <div className="lg:col-span-8 p-gutter-lg sm:p-gutter-xl flex flex-col gap-gutter-lg">
+        <div className="lg:col-span-8 p-gutter-lg sm:p-gutter-xl flex flex-col gap-gutter-lg lg:overflow-y-auto os-scroll">
           <div className="flex flex-col gap-gutter-md">
             <h2
               data-design-text-token="label-sm"
