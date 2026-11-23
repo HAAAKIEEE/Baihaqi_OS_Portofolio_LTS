@@ -38,6 +38,8 @@ export const PROFILE_INFO = {
   shell: 'zsh 5.9 + Wayland',
   location: 'UTC+7 (Indonesia)',
   email: 'halo@baihaqi.dev',
+  whatsappNumber: '089530203497',
+  whatsappUrl: 'https://wa.me/6289530203497',
   githubHandle: 'github.com/baihaqi',
   githubUrl: 'https://github.com/baihaqi',
   availabilityLabel: 'Tersedia Proyek',

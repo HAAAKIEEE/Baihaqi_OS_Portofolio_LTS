@@ -69,6 +69,16 @@ export function ContactApp() {
 
   const blurClass = settings.glassmorphism ? 'backdrop-blur-2xl' : '';
 
+  const whatsappText = [
+    `Halo ${PROFILE_INFO.name}, saya tertarik untuk kolaborasi.`,
+    `Kategori: ${selectedScope}`,
+    name.trim() ? `Nama: ${name.trim()}` : '',
+    brief.trim() ? `Detail: ${brief.trim()}` : '',
+  ]
+    .filter(Boolean)
+    .join('\n');
+  const whatsappHref = `${PROFILE_INFO.whatsappUrl}?text=${encodeURIComponent(whatsappText)}`;
+
   return (
     <section
       aria-label="Kontak dan Konsultasi Otomasi AI"
@@ -94,6 +104,25 @@ export function ContactApp() {
             </div>
 
             <div className="flex flex-col gap-gutter-sm pt-gutter-sm">
+              <a
+                href={PROFILE_INFO.whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-gutter-sm p-gutter-md rounded-md bg-emerald-500/10 border border-emerald-400/40 hover:border-emerald-400 hover:bg-emerald-500/15 transition-colors duration-state-change"
+              >
+                <span className="material-symbols-outlined text-[18px] text-emerald-400" aria-hidden="true">
+                  chat
+                </span>
+                <div className="flex flex-col">
+                  <span data-design-text-token="label-sm" className="font-label text-label-sm text-emerald-300/90">
+                    WhatsApp Langsung
+                  </span>
+                  <span data-design-text-token="mono-md" className="font-mono text-mono-md text-dark-on-surface">
+                    {PROFILE_INFO.whatsappNumber}
+                  </span>
+                </div>
+              </a>
+
               <a
                 href={`mailto:${PROFILE_INFO.email}`}
                 className="flex items-center gap-gutter-sm p-gutter-md rounded-md bg-dark-surface-container-low/80 border border-dark-outline-variant/40 hover:border-dark-primary transition-colors duration-state-change"
@@ -250,7 +279,21 @@ export function ContactApp() {
               </div>
             )}
 
-            <div className="flex items-center justify-end gap-gutter-md pt-gutter-xs">
+            <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-gutter-sm sm:gap-gutter-md pt-gutter-xs">
+              <a
+                href={whatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-gutter-sm px-gutter-lg py-gutter-sm rounded-full bg-emerald-500/15 border border-emerald-400/50 text-emerald-300 hover:bg-emerald-500/25 hover:border-emerald-400 transition-colors duration-state-change ease-state-change focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+              >
+                <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
+                  chat
+                </span>
+                <span data-design-text-token="label-lg" className="font-label text-label-lg">
+                  Chat via WhatsApp
+                </span>
+              </a>
+
               <button
                 type="submit"
                 disabled={submitting}
