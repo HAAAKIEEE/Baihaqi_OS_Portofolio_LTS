@@ -26,18 +26,18 @@ export const PINNED_REPOS: GitHubRepo[] = [];
 export const RECENT_COMMITS: GitCommit[] = [
   {
     hash: 'a4f9c12',
-    message: 'feat(agent): tambah fallback router multi-model Gemini & OpenAI',
-    mobileMessage: 'feat: multi-model router',
+    message: 'feat(ai): integrasi otomasi LLM langsung di sistem Laravel & webhook n8n',
+    mobileMessage: 'feat: Laravel AI & n8n',
     highlight: true,
   },
   {
     hash: '8b3e07d',
-    message: 'perf(api): optimasi query indeks pgvector di bawah 40ms',
-    mobileMessage: 'perf: pgvector < 40ms',
+    message: 'perf(laravel): optimasi query MySQL & komponen Livewire dashboard',
+    mobileMessage: 'perf: Laravel & MySQL',
   },
   {
     hash: 'e21d904',
-    message: 'docs: perbarui panduan deploy Docker Compose untuk n8n',
-    mobileMessage: 'docs: docker compose n8n',
+    message: 'docs: perbarui konfigurasi deployment Linux VPS & n8n workflow',
+    mobileMessage: 'docs: Linux VPS & n8n',
   },
 ];

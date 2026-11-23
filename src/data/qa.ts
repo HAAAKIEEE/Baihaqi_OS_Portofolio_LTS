@@ -104,20 +104,20 @@ export const QA_TOPICS: Record<QaFollowUp['key'], QaAnswer> = {
     question: 'Apa stack teknologi utama Baihaqi?',
     badge: '0.6s • 3 Pilar',
     summary:
-      'Stack utama Baihaqi untuk pengembangan web adalah Laravel, Livewire, Tailwind CSS, PHP, dan MySQL/PostgreSQL (serta Next.js/TypeScript), dipadukan dengan n8n, Python FastAPI, OpenAI/Gemini API, dan pgvector untuk otomasi AI di atas infrastruktur Linux & Docker.',
+      'Stack andalan Baihaqi untuk pengembangan web adalah Laravel, Livewire, Tailwind CSS, PHP, dan MySQL, dipadukan dengan n8n atau integrasi AI / LLM (OpenAI & Gemini API) langsung di dalam sistem aplikasi di atas Linux VPS & Docker.',
     bullets: [
       {
-        title: 'Web Full-Stack',
+        title: 'Web Full-Stack (Andalan)',
         detail:
-          'Laravel & PHP Full-Stack (96%), Livewire & Tailwind CSS (95%), serta TypeScript/Next.js & MySQL/PostgreSQL (88%).',
+          'Laravel & PHP Full-Stack (96%), Livewire & Tailwind CSS (95%), serta MySQL & Database Optimization (92%).',
       },
       {
         title: 'AI & Otomasi',
-        detail: 'n8n & AI Workflow Automation (96%), LLM Agents & RAG Pipelines (92%), Python FastAPI (86%).',
+        detail: 'n8n & AI Workflow Automation (96%), Integrasi AI/LLM Langsung di Sistem (93%), serta REST API & Webhook (90%).',
       },
       {
-        title: 'Linux & DevOps',
-        detail: 'Ubuntu/Arch Linux, Wayland, Docker, Nginx reverse proxy, dan CI/CD GitHub Actions (89%).',
+        title: 'Linux, QA & DevOps',
+        detail: 'Linux VPS, Docker, Nginx, Quality Assurance (QA), serta pemeliharaan sistem produksi.',
       },
     ],
     sources: [...DEFAULT_SOURCES.slice(0, 1), ...WEB_SOURCES.slice(0, 1)],
@@ -143,7 +143,7 @@ export const QA_TOPICS: Record<QaFollowUp['key'], QaAnswer> = {
     bullets: [
       {
         title: 'Kategori Layanan',
-        detail: 'Otomasi AI & Agen LLM (n8n/RAG), Web App Full-Stack (Next.js/API), dan Konsultasi Sistem.',
+        detail: 'Web App Full-Stack (Laravel / Livewire / Tailwind), Otomasi AI (n8n & Integrasi Langsung di Sistem), dan IT/Application Support.',
       },
       {
         title: 'Waktu Respons & Zona Waktu',
@@ -167,21 +167,17 @@ export const QA_TOPICS: Record<QaFollowUp['key'], QaAnswer> = {
   experience: {
     key: 'experience',
     question: 'Bagaimana pengalaman kerja dan latar belakang Baihaqi?',
-    badge: '0.7s • 4+ Tahun',
+    badge: '0.7s • CV & Produksi',
     summary:
-      'Baihaqi memiliki 4+ tahun pengalaman profesional dengan rekam jejak 42+ proyek web selesai dan 18 alur otomasi AI di produksi.',
+      'Baihaqi adalah lulusan D3 Teknik Informatika Politeknik Hasnur (IPK 3.87) dengan pengalaman memimpin divisi IT, membangun sistem internal Laravel & MySQL untuk 101 cabang, serta mengembangkan otomasi AI dengan n8n maupun langsung di dalam sistem.',
     bullets: [
       {
-        title: 'AI Automation & Full-Stack Consultant (2024 – Sekarang)',
-        detail: 'Merancang agen AI, pipeline RAG, dan integrasi n8n + webhook untuk CRM dan operasional tim.',
+        title: 'Kepala Divisi IT | IT Support | Administrasi — PT Gadai Intira Nusantara (Sep 2025 – Sekarang)',
+        detail: 'Mengembangkan aplikasi internal Laravel & MySQL (HRIS, Payroll, Absensi Online, KPI Dashboard, POS) di 2 Linux VPS & 2 shared hosting untuk 101 cabang.',
       },
       {
-        title: 'Senior Web Developer (2022 – 2024)',
-        detail: 'Membangun aplikasi SaaS multi-tenant Next.js, TypeScript, dan PostgreSQL dengan performa sub-100ms.',
-      },
-      {
-        title: 'Frontend & API Engineer (2021 – 2022)',
-        detail: 'Mengembangkan antarmuka React/Tailwind serta REST API Node.js untuk e-commerce dan dashboard.',
+        title: 'Freelance Web, AI Automation & Document Specialist (2024 – Sekarang)',
+        detail: 'Membangun aplikasi web Laravel/Livewire untuk klien, merancang otomasi AI (n8n & integrasi langsung di sistem), serta pengolahan data & dokumen.',
       },
     ],
     sources: WEB_SOURCES,

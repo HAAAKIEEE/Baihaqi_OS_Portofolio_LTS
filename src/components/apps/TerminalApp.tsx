@@ -80,7 +80,7 @@ export function TerminalApp() {
       response = `${PROFILE_INFO.username} — ${PROFILE_INFO.role} (${PROFILE_INFO.location})`;
     } else if (normalized === 'skills' || normalized === 'cat skills.json' || normalized === 'cat ~/skills.json') {
       response =
-        'Stack: Laravel, Livewire, Tailwind CSS, PHP, TypeScript/Next.js, MySQL/PostgreSQL, Python, n8n, OpenAI/Gemini API, Docker, Linux.';
+        'Stack: Laravel, Livewire, Tailwind CSS, PHP, MySQL, n8n, Integrasi AI/LLM Langsung di Sistem (OpenAI/Gemini API), Linux VPS, Docker.';
     } else if (normalized === 'contact') {
       response = `Email: ${PROFILE_INFO.email} | GitHub: ${PROFILE_INFO.githubHandle} | Status: Open for projects.`;
     } else if (normalized === 'projects' || normalized === 'ls ~/projects') {

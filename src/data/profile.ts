@@ -52,7 +52,7 @@ export const PROFILE_INFO = {
   bioSummary:
     'Profesional IT Support, Administrasi IT, Quality Assurance, dan Web Developer (D3 Teknik Informatika, IPK 3.87). Berpengalaman membangun aplikasi Laravel & MySQL sekaligus mengembangkan otomasi alur kerja AI (n8n, Agen LLM & RAG).',
   terminalBio:
-    'I build fast, modern web applications and intelligent AI automation workflows. From custom full-stack platforms to autonomous LLM agents and n8n/API pipelines, I turn repetitive manual processes into reliable software systems.',
+    'I build reliable web applications with Laravel, Livewire, Tailwind CSS, and MySQL, combined with intelligent AI automation using n8n workflows or direct AI integrations inside the system.',
 };
 
 export const SYSTEM_STATS = [

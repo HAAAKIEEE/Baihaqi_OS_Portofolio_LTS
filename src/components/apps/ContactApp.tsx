@@ -176,7 +176,7 @@ export function ContactApp() {
                   check
                 </span>
                 <span data-design-text-token="body-sm" className="font-body text-body-sm text-dark-on-surface-variant">
-                  Aplikasi Web Full-Stack (Next.js / API)
+                  Aplikasi Web Full-Stack (Laravel / Livewire / API)
                 </span>
               </li>
               <li className="flex items-center gap-gutter-xs">
