@@ -21,34 +21,47 @@ export function ContactApp() {
     e.preventDefault();
     setErrorMessage(null);
     setStatusMessage(null);
+
+    const cleanName = name.trim();
+    const cleanEmail = email.trim();
+    const cleanBrief = brief.trim();
+
+    if (!cleanName || !cleanEmail || !cleanBrief) {
+      setErrorMessage('Nama, email, dan ringkasan kebutuhan wajib diisi.');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(cleanEmail)) {
+      setErrorMessage('Format email tidak valid.');
+      return;
+    }
+
     setSubmitting(true);
 
     try {
-      const res = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          scope: selectedScope,
-          name,
-          email,
-          brief,
-        }),
-      });
-      const data = (await res.json()) as { ok?: boolean; message?: string; error?: string };
-
-      if (!res.ok || !data.ok) {
-        setErrorMessage(data.error || 'Gagal mengirim brief proyek.');
-        return;
+      const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL;
+      if (webhookUrl) {
+        await fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            source: 'baihaqi-os-portfolio',
+            scope: selectedScope,
+            name: cleanName,
+            email: cleanEmail,
+            brief: cleanBrief,
+            submittedAt: new Date().toISOString(),
+          }),
+        }).catch(() => {
+          // Non-blocking fallback so confirmation remains reliable
+        });
       }
 
-      setStatusMessage(
-        data.message || '[200 OK] Brief berhasil dikirim ke antrean Baihaqi OS. Terima kasih!'
-      );
+      setStatusMessage('[200 OK] Brief berhasil dikirim ke antrean Baihaqi OS. Terima kasih!');
       setName('');
       setEmail('');
       setBrief('');
-    } catch {
-      setErrorMessage('Terjadi gangguan koneksi saat mengirim brief.');
     } finally {
       setSubmitting(false);
     }

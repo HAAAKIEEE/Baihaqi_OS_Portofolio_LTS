@@ -9,32 +9,10 @@ export function AiSearchApp() {
   const { aiSearchQuery, askAi, openCaseStudy, settings } = useOs();
   const [inputValue, setInputValue] = useState(aiSearchQuery);
   const [answer, setAnswer] = useState<QaAnswer>(() => matchPortfolioQuestion(aiSearchQuery));
-  const [isLoading, setIsLoading] = useState(false);
-
-  const fetchAnswer = async (question: string) => {
-    setIsLoading(true);
-    try {
-      const res = await fetch('/api/ask', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question }),
-      });
-      if (res.ok) {
-        const data = (await res.json()) as QaAnswer;
-        setAnswer(data);
-        return;
-      }
-    } catch {
-      // Fallback to local portfolio matcher
-    } finally {
-      setIsLoading(false);
-    }
-    setAnswer(matchPortfolioQuestion(question));
-  };
 
   useEffect(() => {
     setInputValue(aiSearchQuery);
-    void fetchAnswer(aiSearchQuery);
+    setAnswer(matchPortfolioQuestion(aiSearchQuery));
   }, [aiSearchQuery]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -60,7 +38,7 @@ export function AiSearchApp() {
       <WindowTitleBar
         appId="ai-search"
         title="ai-search — Ringkasan Jawaban & Asisten AI"
-        badgeText={isLoading ? 'Memproses...' : answer.badge}
+        badgeText={answer.badge}
       />
 
       <div className="p-gutter-lg sm:p-gutter-xl flex flex-col gap-gutter-lg">
