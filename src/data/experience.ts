@@ -32,21 +32,22 @@ export const EXPERIENCES: ExperienceItem[] = [
   },
   {
     id: 'freelance-web-doc',
-    role: 'Freelance Web Developer & Document Specialist',
+    role: 'Freelance Web, AI Automation & Document Specialist',
     company: 'Independen',
-    mobileRole: 'Freelance Web & Document Specialist',
+    mobileRole: 'Freelance Web, AI & Doc Specialist',
     period: '2024 – Sekarang',
     mobilePeriod: '2024–Now',
     accentClass: 'text-dark-primary',
     description:
-      'Membangun aplikasi web sesuai kebutuhan operasional klien sekaligus menangani pengolahan data dan dokumentasi profesional.',
+      'Membangun aplikasi web dan otomasi AI sesuai kebutuhan operasional klien sekaligus menangani pengolahan data dan dokumentasi profesional.',
     highlights: [
+      'Merancang alur otomasi AI (n8n workflow, Agen LLM & RAG pipeline) untuk efisiensi operasional dan dukungan pelanggan.',
       'Mengembangkan sistem administrasi kelurahan, monitoring kinerja karyawan, dan digital guestbook.',
       'Menangani analisis kebutuhan klien, deployment aplikasi, maintenance, troubleshooting, dan technical support.',
       'Menyediakan layanan formatting dokumen, proofreading, pengolahan data, serta materi presentasi (Word, Excel, PowerPoint).',
     ],
     mobileDescription:
-      'Aplikasi web operasional klien, deployment/support, dan pengolahan data/dokumen.',
+      'Aplikasi web klien, otomasi AI (n8n & Agen LLM), support, dan pengolahan dokumen.',
   },
 ];
 
@@ -59,12 +60,15 @@ export const EDUCATION_INFO = {
 };
 
 export const CORE_COMPETENCIES: string[] = [
+  'n8n & AI Workflow Automation',
+  'LLM Agents & RAG Pipelines',
+  'OpenAI / Gemini API',
+  'Laravel & MySQL',
+  'Livewire & Tailwind CSS',
   'IT Support & Troubleshooting',
   'Administrasi IT',
   'Application Support',
   'System Administration',
-  'Laravel & MySQL',
-  'Livewire & Tailwind CSS',
   'Quality Assurance (QA)',
   'Software Deployment (Linux VPS)',
   'Data Entry & Validation',

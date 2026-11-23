@@ -38,7 +38,7 @@ export function AboutApp() {
                   {PROFILE_INFO.name}
                 </h1>
                 <p data-design-text-token="body-md" className="font-body text-body-sm sm:text-body-md text-dark-tertiary sm:mt-gutter-xs">
-                  IT Support • IT Admin • Web Dev
+                  Web Dev, AI Automation &amp; IT Support
                 </p>
               </div>
             </div>
@@ -71,8 +71,12 @@ export function AboutApp() {
               <span className="text-dark-primary tabular-nums text-right">D3 TI (IPK 3.87)</span>
             </div>
             <div className="flex items-center justify-between gap-2">
+              <span className="text-dark-outline">Proyek &amp; AI</span>
+              <span className="text-dark-tertiary tabular-nums text-right">42+ Web • 18 Alur AI</span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
               <span className="text-dark-outline">Skala Sistem</span>
-              <span className="text-dark-tertiary tabular-nums text-right">101 Cabang</span>
+              <span className="text-dark-on-surface tabular-nums text-right">101 Cabang</span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-dark-outline">Bahasa</span>
