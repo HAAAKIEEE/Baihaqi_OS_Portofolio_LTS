@@ -1,14 +1,64 @@
 'use client';
 
-import React from 'react';
-import { GITHUB_STATS, PINNED_REPOS, RECENT_COMMITS } from '@/data/github';
+import React, { useEffect, useState } from 'react';
+import { GITHUB_STATS, PINNED_REPOS, RECENT_COMMITS, type GitHubRepo } from '@/data/github';
+import { type GitHubApiRepo } from '@/data/projects';
 import { PROFILE_INFO } from '@/data/profile';
 import { useOs } from '@/context/OsContext';
 import { WindowTitleBar } from '@/components/os/WindowTitleBar';
 
 export function GitHubApp() {
   const { settings } = useOs();
+  const [repos, setRepos] = useState<GitHubRepo[]>(PINNED_REPOS);
+  const [publicReposLabel, setPublicReposLabel] = useState(GITHUB_STATS.contributions);
   const blurClass = settings.glassmorphism ? 'backdrop-blur-2xl' : '';
+
+  useEffect(() => {
+    let active = true;
+    const loadGitHub = async () => {
+      try {
+        const [userRes, reposRes] = await Promise.all([
+          fetch('https://api.github.com/users/HAAAKIEEE'),
+          fetch('https://api.github.com/users/HAAAKIEEE/repos?sort=updated&per_page=6'),
+        ]);
+
+        if (!active) return;
+
+        if (userRes.ok) {
+          const userData = (await userRes.json()) as { public_repos?: number };
+          if (typeof userData.public_repos === 'number') {
+            setPublicReposLabel(`${userData.public_repos} Public Repos`);
+          }
+        }
+
+        if (reposRes.ok) {
+          const apiRepos = (await reposRes.json()) as GitHubApiRepo[];
+          if (Array.isArray(apiRepos) && apiRepos.length > 0) {
+            setRepos(
+              apiRepos.map((repo) => ({
+                name: repo.name,
+                stars: repo.stargazers_count,
+                description:
+                  repo.description?.trim() ||
+                  `Repositori publik (${repo.language ?? 'Project'}) oleh HAAAKIEEE.`,
+                mobileDescription:
+                  repo.description?.trim() || `Repo ${repo.language ?? 'GitHub'}.`,
+                meta: `${repo.language ?? 'Code'} • ${repo.forks_count} Forks`,
+                url: repo.html_url,
+              }))
+            );
+          }
+        }
+      } catch {
+        // Keep static fallback silently if rate-limited or offline
+      }
+    };
+
+    loadGitHub();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
     <section
@@ -18,7 +68,7 @@ export function GitHubApp() {
       <WindowTitleBar
         appId="github"
         title={`git-client — ${PROFILE_INFO.githubHandle}`}
-        badgeText={GITHUB_STATS.contributions}
+        badgeText={publicReposLabel}
       />
 
       <div className="p-gutter-lg sm:p-gutter-xl flex flex-col gap-gutter-lg sm:gap-gutter-xl">
@@ -29,7 +79,7 @@ export function GitHubApp() {
               data-design-text-token="label-sm"
               className="font-label text-label-sm uppercase tracking-wider text-dark-primary"
             >
-              Repositori Unggulan
+              Repositori Terbaru (Live GitHub)
             </h1>
             <a
               href={PROFILE_INFO.githubUrl}
@@ -45,7 +95,7 @@ export function GitHubApp() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-gutter-md items-stretch">
-            {PINNED_REPOS.map((repo) => (
+            {repos.map((repo) => (
               <a
                 key={repo.name}
                 href={repo.url}
