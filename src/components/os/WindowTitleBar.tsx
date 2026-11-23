@@ -56,7 +56,7 @@ export function WindowTitleBar({
     <header
       onMouseDown={handleDragStart}
       onDoubleClick={handleToggleMaximize}
-      className={`flex flex-wrap items-center justify-between gap-gutter-md px-gutter-lg py-gutter-md bg-dark-surface-container/90 border-b border-dark-outline-variant/50 select-none ${
+      className={`sticky top-0 z-20 shrink-0 flex flex-wrap items-center justify-between gap-gutter-md px-gutter-lg py-gutter-md bg-dark-surface-container/95 backdrop-blur-xl border-b border-dark-outline-variant/50 select-none ${
         handleDragStart && !isMaximized ? 'md:cursor-grab md:active:cursor-grabbing' : ''
       }`}
     >
