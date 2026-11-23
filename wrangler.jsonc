@@ -9,9 +9,12 @@
   },
   // Setelah menjalankan `npx wrangler kv namespace create PORTFOLIO_KV`,
   // tempelkan blok ini dengan ID namespace Anda agar data Admin Panel tersimpan di Cloudflare KV:
-  // "kv_namespaces": [
-  //   { "binding": "PORTFOLIO_KV", "id": "<PASTE_KV_NAMESPACE_ID>" }
-  // ],
+  "kv_namespaces": [
+    {
+      "binding": "PORTFOLIO_KV",
+      "id": "dd437329b0a346cda823a316afa2ca13"
+    }
+  ],
   "observability": {
     "enabled": true,
     "traces": {
