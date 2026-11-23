@@ -29,7 +29,7 @@ export const PINNED_REPOS: GitHubRepo[] = [
       'Template produksi agen LLM dan router webhook untuk alur kerja otomasi n8n.',
     mobileDescription: 'Template agen LLM & webhook router n8n.',
     meta: 'TypeScript • MIT',
-    url: 'https://github.com/baihaqi/n8n-ai-agent-starter',
+    url: 'https://github.com/HAAAKIEEE/',
   },
   {
     name: 'nextjs-linux-portfolio',
@@ -38,7 +38,7 @@ export const PINNED_REPOS: GitHubRepo[] = [
       'Antarmuka portofolio interaktif bergaya desktop Linux dengan sistem jendela kaca.',
     mobileDescription: 'Portofolio interaktif bergaya desktop Linux.',
     meta: 'TypeScript • Next.js',
-    url: 'https://github.com/baihaqi/nextjs-linux-portfolio',
+    url: 'https://github.com/HAAAKIEEE/Baihaqi_OS_Portofolio_LTS',
   },
   {
     name: 'pgvector-rag-kit',
@@ -47,7 +47,7 @@ export const PINNED_REPOS: GitHubRepo[] = [
       'Toolkit FastAPI & PostgreSQL pgvector untuk pencarian semantik dokumen perusahaan.',
     mobileDescription: 'Toolkit FastAPI & pgvector untuk pencarian dokumen.',
     meta: 'Python • FastAPI',
-    url: 'https://github.com/baihaqi/pgvector-rag-kit',
+    url: 'https://github.com/HAAAKIEEE/',
   },
   {
     name: 'arch-hyprland-dotfiles',
@@ -56,7 +56,7 @@ export const PINNED_REPOS: GitHubRepo[] = [
       'Konfigurasi Wayland, Zsh, dan Neovim untuk lingkungan kerja Linux yang cepat dan rapi.',
     mobileDescription: 'Konfigurasi Wayland, Zsh, dan Neovim untuk Linux.',
     meta: 'Shell • Wayland',
-    url: 'https://github.com/baihaqi/arch-hyprland-dotfiles',
+    url: 'https://github.com/HAAAKIEEE/',
   },
 ];
 

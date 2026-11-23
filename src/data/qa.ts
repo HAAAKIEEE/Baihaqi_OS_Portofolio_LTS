@@ -139,7 +139,7 @@ export const QA_TOPICS: Record<QaFollowUp['key'], QaAnswer> = {
     question: 'Apakah Baihaqi tersedia untuk proyek baru?',
     badge: '0.4s • Status Aktif',
     summary:
-      'Ya, Baihaqi saat ini tersedia untuk proyek baru baik untuk pengembangan aplikasi web full-stack maupun konsultasi otomasi alur kerja AI. Anda dapat mengirim brief langsung melalui aplikasi Kontak atau email ke halo@baihaqi.dev.',
+      'Ya, Baihaqi saat ini tersedia untuk proyek baru baik untuk pengembangan aplikasi web full-stack maupun konsultasi otomasi alur kerja AI. Anda dapat mengirim brief langsung melalui aplikasi Kontak atau email ke haqi20082004@gmail.com.',
     bullets: [
       {
         title: 'Kategori Layanan',
@@ -203,7 +203,7 @@ export const QA_TOPICS: Record<QaFollowUp['key'], QaAnswer> = {
     question: 'Apa saja repositori open source Baihaqi di GitHub?',
     badge: '0.5s • 28 Repos',
     summary:
-      'Di GitHub (github.com/baihaqi), Baihaqi mencatat 1,240+ kontribusi dan 490+ stars pada berbagai starter kit AI automation, Next.js, dan konfigurasi Linux.',
+      'Di GitHub (github.com/HAAAKIEEE), Baihaqi mencatat 1,240+ kontribusi dan 490+ stars pada berbagai starter kit AI automation, Next.js, dan konfigurasi Linux.',
     bullets: [
       {
         title: 'n8n-ai-agent-starter (★ 184)',
