@@ -50,7 +50,7 @@ function OsWorkspace() {
   const { activeApp, visibleWindows, isLocked } = useOs();
 
   return (
-    <div className="relative h-screen w-full overflow-hidden flex flex-col justify-between p-gutter-lg md:p-page-margin bg-dark-surface-container-lowest">
+    <div className="relative h-dvh w-full overflow-hidden flex flex-col justify-between p-3 sm:p-gutter-lg md:p-page-margin bg-dark-surface-container-lowest">
       <CosmicWallpaper />
 
       {isLocked ? (
@@ -61,7 +61,13 @@ function OsWorkspace() {
             <TopBar />
           </header>
 
-          <main className="relative z-20 flex-1 min-h-0 flex flex-col items-center justify-center gap-gutter-lg py-gutter-md sm:py-gutter-lg overflow-y-auto md:overflow-visible no-scrollbar">
+          <main
+            className={`relative z-20 flex-1 min-h-0 flex flex-col items-center gap-gutter-lg py-2 sm:py-gutter-lg no-scrollbar ${
+              visibleWindows.length > 0
+                ? 'justify-start md:justify-center overflow-hidden md:overflow-visible'
+                : 'justify-center overflow-y-auto md:overflow-visible'
+            }`}
+          >
             {visibleWindows.length === 0 && (
               <div className="w-full flex items-center justify-center">
                 <HomeSearchBar />

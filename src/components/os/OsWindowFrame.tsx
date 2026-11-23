@@ -94,8 +94,12 @@ export function OsWindowFrame({ windowState, isFocused, children }: OsWindowFram
         style={frameStyle}
         className={
           windowState.isMaximized
-            ? 'fixed inset-x-0 top-10 bottom-20 md:inset-x-0 md:top-10 md:bottom-20 flex flex-col [&>section]:max-w-none [&>section]:w-full [&>section]:h-full [&>section]:flex-1 [&>section]:overflow-y-auto [&>section]:os-scroll [&>section]:rounded-none [&>section]:border-x-0 [&>section]:ring-1 [&>section]:ring-dark-primary/60'
-            : `w-full md:w-[min(92vw,60rem)] md:absolute md:left-1/2 md:top-1/2 md:[transform:translate(calc(-50%+var(--win-x)),calc(-50%+var(--win-y)))] [&>section]:max-h-[calc(100vh-11.5rem)] [&>section]:overflow-y-auto [&>section]:os-scroll ${
+            ? `${
+                isFocused ? 'flex' : 'hidden md:flex'
+              } fixed inset-x-0 top-10 bottom-20 md:inset-x-0 md:top-10 md:bottom-20 flex-col [&>section]:max-w-none [&>section]:w-full [&>section]:h-full [&>section]:flex-1 [&>section]:overflow-y-auto [&>section]:os-scroll [&>section]:rounded-none [&>section]:border-x-0 [&>section]:ring-1 [&>section]:ring-dark-primary/60`
+            : `${
+                isFocused ? 'flex h-full md:h-auto' : 'hidden md:block'
+              } flex-col w-full md:w-[min(92vw,60rem)] md:absolute md:left-1/2 md:top-1/2 md:[transform:translate(calc(-50%+var(--win-x)),calc(-50%+var(--win-y)))] [&>section]:h-full md:[&>section]:h-auto [&>section]:max-h-full md:[&>section]:max-h-[calc(100vh-11.5rem)] [&>section]:overflow-y-auto [&>section]:os-scroll ${
                 isFocused
                   ? '[&>section]:ring-1 [&>section]:ring-dark-primary/70 [&>section]:shadow-2xl'
                   : 'opacity-95 [&>section]:border-dark-outline-variant/40'
