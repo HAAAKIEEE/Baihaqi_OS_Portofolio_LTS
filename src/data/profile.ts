@@ -36,10 +36,12 @@ export const PROFILE_INFO = {
   compositor: 'Wayland Glass',
   kernel: '6.11-cosmic',
   shell: 'zsh 5.9 + Wayland',
-  location: 'UTC+7 (Indonesia)',
+  location: 'Kalimantan Selatan, Indonesia (UTC+7)',
   email: 'haqi20082004@gmail.com',
   whatsappNumber: '089530203497',
   whatsappUrl: 'https://wa.me/6289530203497',
+  cvUrl: '/cv-baihaqi.pdf',
+  websiteUrl: 'https://www.baihaqi.my.id',
   githubHandle: 'github.com/HAAAKIEEE',
   githubUrl: 'https://github.com/HAAAKIEEE/',
   availabilityLabel: 'Tersedia Proyek',
@@ -47,7 +49,7 @@ export const PROFILE_INFO = {
   responseSla: 'Respon < 24 Jam',
   tagline: 'Baihaqi — Web & AI Automation',
   bioSummary:
-    'Berbasis di Indonesia (UTC+7). Menggabungkan rekayasa web modern dengan agen AI dan otomasi alur kerja untuk efisiensi tim bisnis.',
+    'Profesional IT & Administrasi (D3 Teknik Informatika, IPK 3.87) yang berfokus pada IT Support, Administrasi IT, Quality Assurance, pengolahan data, serta pengembangan aplikasi bisnis berbasis Laravel & otomasi AI.',
   terminalBio:
     'I build fast, modern web applications and intelligent AI automation workflows. From custom full-stack platforms to autonomous LLM agents and n8n/API pipelines, I turn repetitive manual processes into reliable software systems.',
 };
