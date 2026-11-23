@@ -1,13 +1,14 @@
 'use client';
 
 import React from 'react';
-import { CORE_COMPETENCIES, EDUCATION_INFO, EXPERIENCES } from '@/data/experience';
-import { PROFILE_INFO } from '@/data/profile';
 import { useOs } from '@/context/OsContext';
+import { usePortfolioData } from '@/context/PortfolioDataContext';
 import { WindowTitleBar } from '@/components/os/WindowTitleBar';
 
 export function AboutApp() {
   const { settings } = useOs();
+  const { data } = usePortfolioData();
+  const { profile, experiences, education, competencies } = data;
   const blurClass = settings.glassmorphism ? 'backdrop-blur-2xl' : '';
 
   return (
@@ -18,7 +19,7 @@ export function AboutApp() {
       <WindowTitleBar
         appId="about"
         title="tentang.md — Profil, Pengalaman & CV"
-        badgeText={PROFILE_INFO.availabilityLabel}
+        badgeText={profile.availabilityLabel}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 lg:flex-1 lg:min-h-0 lg:overflow-hidden">
@@ -28,14 +29,14 @@ export function AboutApp() {
             <div className="flex lg:flex-col items-center lg:items-start gap-gutter-md">
               <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-b from-dark-primary-container/30 to-dark-surface-container-high border border-dark-primary/50 overflow-hidden shrink-0 shadow-md">
                 <img
-                  src={PROFILE_INFO.avatarUrl}
-                  alt={`Foto profil ${PROFILE_INFO.name}`}
+                  src={profile.avatarUrl}
+                  alt={`Foto profil ${profile.name}`}
                   className="w-full h-full object-cover object-[50%_62%]"
                 />
               </div>
               <div>
                 <h1 data-design-text-token="headline-md" className="font-headline text-title-md sm:text-headline-md text-dark-on-surface">
-                  {PROFILE_INFO.name}
+                  {profile.name}
                 </h1>
                 <p data-design-text-token="body-md" className="font-body text-body-sm sm:text-body-md text-dark-tertiary sm:mt-gutter-xs">
                   Web Dev, AI Automation &amp; IT Support
@@ -44,11 +45,11 @@ export function AboutApp() {
             </div>
 
             <p data-design-text-token="body-sm" className="font-body text-body-sm text-dark-on-surface-variant text-pretty">
-              {PROFILE_INFO.bioSummary}
+              {profile.bioSummary}
             </p>
 
             <a
-              href={PROFILE_INFO.cvUrl}
+              href={profile.cvUrl}
               download="CV-Baihaqi.pdf"
               className="w-full inline-flex items-center justify-center gap-gutter-sm px-gutter-md py-gutter-sm rounded-full bg-dark-primary text-dark-on-primary hover:bg-dark-primary-container hover:text-dark-on-primary-container transition-colors duration-state-change ease-state-change focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dark-primary"
             >
@@ -96,7 +97,7 @@ export function AboutApp() {
             </h2>
 
             <div className="flex flex-col gap-gutter-md">
-              {EXPERIENCES.map((exp) => (
+              {experiences.map((exp) => (
                 <article
                   key={exp.id}
                   className="p-gutter-md sm:p-gutter-lg rounded-lg bg-dark-surface-container-low/80 border border-dark-outline-variant/40 flex flex-col gap-gutter-xs"
@@ -142,13 +143,13 @@ export function AboutApp() {
               </h2>
               <div className="p-gutter-md rounded-lg bg-dark-surface-container-low/80 border border-dark-outline-variant/40 flex flex-col gap-1">
                 <span className="font-headline text-body-md text-dark-on-surface font-semibold">
-                  {EDUCATION_INFO.institution}
+                  {education.institution}
                 </span>
                 <span className="font-body text-body-sm text-dark-on-surface-variant">
-                  {EDUCATION_INFO.program} ({EDUCATION_INFO.period})
+                  {education.program} ({education.period})
                 </span>
                 <span className="font-mono text-label-sm text-dark-primary mt-1">
-                  {EDUCATION_INFO.gpa} • {EDUCATION_INFO.honor}
+                  {education.gpa} • {education.honor}
                 </span>
               </div>
             </div>
@@ -161,7 +162,7 @@ export function AboutApp() {
                 Kompetensi Utama
               </h2>
               <div className="flex flex-wrap gap-1.5">
-                {CORE_COMPETENCIES.map((skill) => (
+                {competencies.map((skill) => (
                   <span
                     key={skill}
                     className="px-2.5 py-1 rounded-md bg-dark-surface-container-high/90 border border-dark-outline-variant/40 font-mono text-[11px] text-dark-on-surface-variant"

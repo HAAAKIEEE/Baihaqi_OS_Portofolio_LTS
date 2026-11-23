@@ -29,6 +29,7 @@ const DEFAULT_POSITIONS: Record<WindowAppId, { x: number; y: number }> = {
   contact: { x: 26, y: -22 },
   settings: { x: 0, y: 0 },
   'ai-search': { x: -12, y: -8 },
+  admin: { x: 0, y: 0 },
 };
 
 function createInitialWindows(): Record<WindowAppId, OsWindowInstance> {
@@ -42,6 +43,7 @@ function createInitialWindows(): Record<WindowAppId, OsWindowInstance> {
     contact: { id: 'contact', isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1, position: { ...DEFAULT_POSITIONS.contact } },
     settings: { id: 'settings', isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1, position: { ...DEFAULT_POSITIONS.settings } },
     'ai-search': { id: 'ai-search', isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1, position: { ...DEFAULT_POSITIONS['ai-search'] } },
+    admin: { id: 'admin', isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1, position: { ...DEFAULT_POSITIONS.admin } },
   };
 }
 
@@ -61,6 +63,7 @@ interface OsContextValue {
   visibleWindows: OsWindowInstance[];
   activeApp: AppId;
   isLocked: boolean;
+  isAdminAuthenticated: boolean;
   isLauncherOpen: boolean;
   aiSearchQuery: string;
   selectedCaseStudyId: string;
@@ -77,6 +80,8 @@ interface OsContextValue {
   showDesktop: () => void;
   lockSession: () => void;
   unlockSession: () => void;
+  loginAdmin: (password: string) => boolean;
+  logoutAdmin: () => void;
   openLauncher: () => void;
   closeLauncher: () => void;
   toggleLauncher: () => void;
@@ -91,6 +96,7 @@ const OsContext = createContext<OsContextValue | null>(null);
 export function OsProvider({ children }: { children: React.ReactNode }) {
   const [windows, setWindows] = useState<Record<WindowAppId, OsWindowInstance>>(createInitialWindows);
   const [isLocked, setIsLocked] = useState(false);
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   const [isLauncherOpen, setIsLauncherOpen] = useState(false);
   const [aiSearchQuery, setAiSearchQuery] = useState(
     'Apa saja proyek otomasi AI yang pernah dibangun Baihaqi?'
@@ -274,6 +280,23 @@ export function OsProvider({ children }: { children: React.ReactNode }) {
     setIsLocked(false);
   }, []);
 
+  const loginAdmin = useCallback(
+    (password: string) => {
+      if (password === 'Baihaqi123!@#') {
+        setIsAdminAuthenticated(true);
+        openApp('admin');
+        return true;
+      }
+      return false;
+    },
+    [openApp]
+  );
+
+  const logoutAdmin = useCallback(() => {
+    setIsAdminAuthenticated(false);
+    closeWindow('admin');
+  }, [closeWindow]);
+
   const openLauncher = useCallback(() => {
     if (!isLocked) setIsLauncherOpen(true);
   }, [isLocked]);
@@ -366,6 +389,7 @@ export function OsProvider({ children }: { children: React.ReactNode }) {
         visibleWindows,
         activeApp,
         isLocked,
+        isAdminAuthenticated,
         isLauncherOpen,
         aiSearchQuery,
         selectedCaseStudyId,
@@ -382,6 +406,8 @@ export function OsProvider({ children }: { children: React.ReactNode }) {
         showDesktop,
         lockSession,
         unlockSession,
+        loginAdmin,
+        logoutAdmin,
         openLauncher,
         closeLauncher,
         toggleLauncher,

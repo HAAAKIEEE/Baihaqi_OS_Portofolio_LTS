@@ -1,17 +1,19 @@
 'use client';
 
 import React, { useState } from 'react';
-import { SKILL_METRICS, SKILL_PILLARS, type SkillCategory } from '@/data/skills';
+import { type SkillCategory } from '@/data/skills';
 import { useOs } from '@/context/OsContext';
+import { usePortfolioData } from '@/context/PortfolioDataContext';
 import { WindowTitleBar } from '@/components/os/WindowTitleBar';
 
 type SkillFilter = 'all' | SkillCategory;
 
 export function SkillsApp() {
   const { settings } = useOs();
+  const { data } = usePortfolioData();
   const [filter, setFilter] = useState<SkillFilter>('all');
 
-  const visibleSkills = SKILL_METRICS.filter(
+  const visibleSkills = data.skills.filter(
     (skill) => filter === 'all' || skill.category === filter
   );
   const blurClass = settings.glassmorphism ? 'backdrop-blur-2xl' : '';
@@ -28,7 +30,7 @@ export function SkillsApp() {
           <div className="flex flex-wrap items-center gap-gutter-xs" role="tablist" aria-label="Filter Keahlian">
             {(
               [
-                { id: 'all', label: 'Semua (8)' },
+                { id: 'all', label: `Semua (${data.skills.length})` },
                 { id: 'web', label: 'Web Full-Stack' },
                 { id: 'ai', label: 'AI & Otomasi' },
                 { id: 'devops', label: 'Linux & DevOps' },
@@ -59,7 +61,7 @@ export function SkillsApp() {
       <div className="p-gutter-lg sm:p-gutter-xl flex flex-col gap-gutter-lg sm:gap-gutter-xl">
         {/* Top 3 Summary Pillars */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter-md items-stretch">
-          {SKILL_PILLARS.map((pillar, idx) => (
+          {data.skillPillars.map((pillar, idx) => (
             <article
               key={pillar.id}
               className="h-full p-gutter-lg rounded-lg bg-dark-surface-container-low/80 border border-dark-outline-variant/40 flex flex-col gap-gutter-xs"

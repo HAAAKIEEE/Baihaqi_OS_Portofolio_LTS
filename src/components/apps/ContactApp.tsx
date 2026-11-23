@@ -1,14 +1,16 @@
 'use client';
 
 import React, { useState } from 'react';
-import { PROFILE_INFO } from '@/data/profile';
 import { useOs } from '@/context/OsContext';
+import { usePortfolioData } from '@/context/PortfolioDataContext';
 import { WindowTitleBar } from '@/components/os/WindowTitleBar';
 
 const SCOPES = ['Otomasi AI & Agen', 'Web App Full-Stack', 'Konsultasi Sistem'] as const;
 
 export function ContactApp() {
   const { settings } = useOs();
+  const { data } = usePortfolioData();
+  const profile = data.profile;
   const [selectedScope, setSelectedScope] = useState<string>(SCOPES[0]);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -70,14 +72,14 @@ export function ContactApp() {
   const blurClass = settings.glassmorphism ? 'backdrop-blur-2xl' : '';
 
   const whatsappText = [
-    `Halo ${PROFILE_INFO.name}, saya tertarik untuk kolaborasi.`,
+    `Halo ${profile.name}, saya tertarik untuk kolaborasi.`,
     `Kategori: ${selectedScope}`,
     name.trim() ? `Nama: ${name.trim()}` : '',
     brief.trim() ? `Detail: ${brief.trim()}` : '',
   ]
     .filter(Boolean)
     .join('\n');
-  const whatsappHref = `${PROFILE_INFO.whatsappUrl}?text=${encodeURIComponent(whatsappText)}`;
+  const whatsappHref = `${profile.whatsappUrl}?text=${encodeURIComponent(whatsappText)}`;
 
   return (
     <section
@@ -87,7 +89,7 @@ export function ContactApp() {
       <WindowTitleBar
         appId="contact"
         title="kontak.sh — Konsultasi Web & Otomasi AI"
-        badgeText={PROFILE_INFO.availabilityLabel}
+        badgeText={profile.availabilityLabel}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-12">
@@ -105,7 +107,7 @@ export function ContactApp() {
 
             <div className="flex flex-col gap-gutter-sm pt-gutter-sm">
               <a
-                href={PROFILE_INFO.whatsappUrl}
+                href={profile.whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-gutter-sm p-gutter-md rounded-md bg-emerald-500/10 border border-emerald-400/40 hover:border-emerald-400 hover:bg-emerald-500/15 transition-colors duration-state-change"
@@ -118,13 +120,13 @@ export function ContactApp() {
                     WhatsApp Langsung
                   </span>
                   <span data-design-text-token="mono-md" className="font-mono text-mono-md text-dark-on-surface">
-                    {PROFILE_INFO.whatsappNumber}
+                    {profile.whatsappNumber}
                   </span>
                 </div>
               </a>
 
               <a
-                href={`mailto:${PROFILE_INFO.email}`}
+                href={`mailto:${profile.email}`}
                 className="flex items-center gap-gutter-sm p-gutter-md rounded-md bg-dark-surface-container-low/80 border border-dark-outline-variant/40 hover:border-dark-primary transition-colors duration-state-change"
               >
                 <span className="material-symbols-outlined text-[18px] text-dark-primary" aria-hidden="true">
@@ -135,13 +137,13 @@ export function ContactApp() {
                     Email Langsung
                   </span>
                   <span data-design-text-token="mono-md" className="font-mono text-mono-md text-dark-on-surface">
-                    {PROFILE_INFO.email}
+                    {profile.email}
                   </span>
                 </div>
               </a>
 
               <a
-                href={PROFILE_INFO.githubUrl}
+                href={profile.githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-gutter-sm p-gutter-md rounded-md bg-dark-surface-container-low/80 border border-dark-outline-variant/40 hover:border-dark-primary transition-colors duration-state-change"
@@ -154,7 +156,7 @@ export function ContactApp() {
                     GitHub
                   </span>
                   <span data-design-text-token="mono-md" className="font-mono text-mono-md text-dark-on-surface">
-                    {PROFILE_INFO.githubHandle}
+                    {profile.githubHandle}
                   </span>
                 </div>
               </a>

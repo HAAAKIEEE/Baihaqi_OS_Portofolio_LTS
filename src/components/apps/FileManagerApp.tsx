@@ -2,22 +2,22 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  PROJECTS,
   mapGitHubRepoToProject,
   type GitHubApiRepo,
   type ProjectCaseStudy,
   type ProjectCategory,
 } from '@/data/projects';
-import { PROFILE_INFO } from '@/data/profile';
 import { useOs } from '@/context/OsContext';
+import { usePortfolioData } from '@/context/PortfolioDataContext';
 import { WindowTitleBar } from '@/components/os/WindowTitleBar';
 
 type FilterType = 'all' | ProjectCategory | 'github';
 
 export function FileManagerApp() {
   const { selectedCaseStudyId, setSelectedCaseStudyId, settings } = useOs();
+  const { data } = usePortfolioData();
   const [filter, setFilter] = useState<FilterType>('all');
-  const [githubProjects, setGithubProjects] = useState<ProjectCaseStudy[]>([]);
+  const [rawGithubRepos, setRawGithubRepos] = useState<GitHubApiRepo[]>([]);
   const [githubLoading, setGithubLoading] = useState(true);
 
   const fetchGitHubRepos = useCallback(async () => {
@@ -29,7 +29,7 @@ export function FileManagerApp() {
       );
       if (!res.ok) return;
       const repos = (await res.json()) as GitHubApiRepo[];
-      setGithubProjects(repos.map(mapGitHubRepoToProject));
+      setRawGithubRepos(repos);
     } catch {
       // Fallback gracefully to manual projects if offline/rate-limited
     } finally {
@@ -41,12 +41,20 @@ export function FileManagerApp() {
     fetchGitHubRepos();
   }, [fetchGitHubRepos]);
 
+  const githubProjects = useMemo<ProjectCaseStudy[]>(
+    () =>
+      rawGithubRepos
+        .filter((repo) => !data.hiddenGitHubIds.includes(repo.id))
+        .map(mapGitHubRepoToProject),
+    [rawGithubRepos, data.hiddenGitHubIds]
+  );
+
   const combinedProjects = useMemo(
     () => [
-      ...PROJECTS.map((p) => ({ ...p, source: 'manual' as const })),
+      ...data.projects.map((p) => ({ ...p, source: 'manual' as const })),
       ...githubProjects,
     ],
-    [githubProjects]
+    [data.projects, githubProjects]
   );
 
   const visibleProjects = useMemo(() => {
@@ -59,7 +67,7 @@ export function FileManagerApp() {
     visibleProjects.find((p) => p.id === selectedCaseStudyId) ||
     combinedProjects.find((p) => p.id === selectedCaseStudyId) ||
     visibleProjects[0] ||
-    PROJECTS[0];
+    data.projects[0];
 
   const breadcrumbPath =
     filter === 'all' ? '/home/baihaqi/projects' : `/home/baihaqi/projects/${filter}`;
@@ -207,12 +215,12 @@ export function FileManagerApp() {
               {githubLoading ? 'Syncing GitHub...' : `${githubProjects.length} Repo GitHub`}
             </span>
             <a
-              href={PROFILE_INFO.githubUrl}
+              href={data.profile.githubUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="font-mono text-[11px] text-dark-outline hover:text-dark-tertiary truncate transition-colors"
             >
-              {PROFILE_INFO.githubHandle}
+              {data.profile.githubHandle}
             </a>
           </div>
         </aside>

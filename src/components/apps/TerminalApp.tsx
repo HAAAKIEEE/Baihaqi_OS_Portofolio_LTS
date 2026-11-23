@@ -13,11 +13,28 @@ interface LogEntry {
 }
 
 export function TerminalApp() {
-  const { openApp, lockSession, settings } = useOs();
+  const { openApp, lockSession, loginAdmin, logoutAdmin, isAdminAuthenticated, settings } = useOs();
   const [commandInput, setCommandInput] = useState('');
+  const [awaitingSudoPassword, setAwaitingSudoPassword] = useState(false);
   const [logs, setLogs] = useState<LogEntry[]>([]);
 
   const executeCommand = (rawCmd: string) => {
+    if (awaitingSudoPassword) {
+      const ok = loginAdmin(rawCmd);
+      setAwaitingSudoPassword(false);
+      setLogs((prev) => [
+        ...prev,
+        {
+          id: Date.now() + Math.random(),
+          command: '[sudo] password for baihaqi: ••••••••',
+          response: ok
+            ? 'Authentication successful. Opening root Admin Panel (/admin)...'
+            : 'su: Authentication failure (incorrect password).',
+        },
+      ]);
+      return;
+    }
+
     const normalized = rawCmd.trim().toLowerCase();
     if (!normalized) return;
 
@@ -26,10 +43,36 @@ export function TerminalApp() {
       return;
     }
 
+    if (normalized === 'sudo su' || normalized === 'sudo -i' || normalized === 'su root') {
+      if (isAdminAuthenticated) {
+        openApp('admin');
+        setLogs((prev) => [
+          ...prev,
+          { id: Date.now() + Math.random(), command: rawCmd.trim(), response: 'Root session already active. Opening Admin Panel...' },
+        ]);
+        return;
+      }
+      setAwaitingSudoPassword(true);
+      setLogs((prev) => [
+        ...prev,
+        { id: Date.now() + Math.random(), command: rawCmd.trim(), response: '[sudo] password for baihaqi:' },
+      ]);
+      return;
+    }
+
+    if ((normalized === 'exit' || normalized === 'logout') && isAdminAuthenticated) {
+      logoutAdmin();
+      setLogs((prev) => [
+        ...prev,
+        { id: Date.now() + Math.random(), command: rawCmd.trim(), response: 'Root session closed.' },
+      ]);
+      return;
+    }
+
     let response = '';
     if (normalized === 'help') {
       response =
-        'Available commands: neofetch, bio, whoami, skills, projects, ai, github, contact, settings, lock, clear';
+        'Available commands: neofetch, bio, whoami, skills, projects, ai, github, contact, settings, lock, sudo su, clear';
     } else if (normalized === 'bio' || normalized === 'neofetch' || normalized === 'neofetch --bio') {
       response =
         'Baihaqi — Web Developer & AI Automation Specialist (4+ yrs, Laravel/Livewire/Tailwind + n8n/LLM Agents).';
@@ -239,15 +282,31 @@ export function TerminalApp() {
           onSubmit={handleSubmit}
           className="flex items-center gap-gutter-sm pt-gutter-sm border-t border-dark-outline-variant/40 font-mono text-mono-md"
         >
-          <span className="hidden sm:inline text-dark-tertiary shrink-0">baihaqi@linux-os</span>
-          <span className="hidden sm:inline text-dark-outline shrink-0">:~$</span>
-          <span className="sm:hidden text-dark-tertiary shrink-0">$</span>
+          {awaitingSudoPassword ? (
+            <span className="text-dark-error shrink-0">[sudo] password for baihaqi:</span>
+          ) : (
+            <>
+              <span className="hidden sm:inline text-dark-tertiary shrink-0">
+                {isAdminAuthenticated ? 'root@linux-os' : 'baihaqi@linux-os'}
+              </span>
+              <span className="hidden sm:inline text-dark-outline shrink-0">
+                {isAdminAuthenticated ? ':#' : ':~$'}
+              </span>
+              <span className="sm:hidden text-dark-tertiary shrink-0">
+                {isAdminAuthenticated ? '#' : '$'}
+              </span>
+            </>
+          )}
           <input
-            type="text"
+            type={awaitingSudoPassword ? 'password' : 'text'}
             value={commandInput}
             onChange={(e) => setCommandInput(e.target.value)}
-            aria-label="Terminal command input"
-            placeholder="Type 'help', 'bio', 'skills', 'projects', or 'contact'..."
+            aria-label={awaitingSudoPassword ? 'Sudo password input' : 'Terminal command input'}
+            placeholder={
+              awaitingSudoPassword
+                ? 'Masukkan password root lalu tekan Enter...'
+                : "Type 'help', 'bio', 'skills', 'projects', 'sudo su', or 'contact'..."
+            }
             className="w-full bg-transparent border-0 p-0 font-mono text-mono-md text-dark-on-surface placeholder:text-dark-outline focus:ring-0 focus:outline-none"
           />
         </form>

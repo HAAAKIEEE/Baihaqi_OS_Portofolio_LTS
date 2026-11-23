@@ -1,37 +1,42 @@
 'use client';
 
 import React, { useState } from 'react';
-import { WORKFLOWS, WORKFLOW_LIST, type WorkflowId, type WorkflowLogLine } from '@/data/workflows';
+import { type WorkflowLogLine } from '@/data/workflows';
 import { useOs } from '@/context/OsContext';
+import { usePortfolioData } from '@/context/PortfolioDataContext';
 import { WindowTitleBar } from '@/components/os/WindowTitleBar';
 
 export function AiLabApp() {
   const { settings } = useOs();
-  const [selectedId, setSelectedId] = useState<WorkflowId>('crm');
-  const [extraLogs, setExtraLogs] = useState<Record<WorkflowId, WorkflowLogLine[]>>({
-    crm: [],
-    rag: [],
-    ocr: [],
-  });
+  const { data } = usePortfolioData();
+  const [selectedId, setSelectedId] = useState<string>(data.workflows[0]?.id ?? 'crm');
+  const [extraLogs, setExtraLogs] = useState<Record<string, WorkflowLogLine[]>>({});
 
-  const activeWorkflow = WORKFLOWS[selectedId];
-  const combinedLogs = [...activeWorkflow.logs, ...extraLogs[selectedId]];
+  const activeWorkflow =
+    data.workflows.find((w) => w.id === selectedId) || data.workflows[0];
+  const combinedLogs = [
+    ...(activeWorkflow?.logs ?? []),
+    ...(extraLogs[activeWorkflow?.id ?? ''] ?? []),
+  ];
 
   const handleRunSimulation = () => {
+    if (!activeWorkflow) return;
     const now = new Date();
     const ts = `[${now.toTimeString().slice(0, 8)}]`;
     const nextLine: WorkflowLogLine = {
       timestamp: ts,
-      message: `simulation.run → workflow="${selectedId}" selesai tanpa galat (200 OK)`,
+      message: `simulation.run → workflow="${activeWorkflow.id}" selesai tanpa galat (200 OK)`,
       colorClass: 'text-dark-tertiary',
     };
     setExtraLogs((prev) => ({
       ...prev,
-      [selectedId]: [...prev[selectedId], nextLine],
+      [activeWorkflow.id]: [...(prev[activeWorkflow.id] ?? []), nextLine],
     }));
   };
 
   const blurClass = settings.glassmorphism ? 'backdrop-blur-2xl' : '';
+
+  if (!activeWorkflow) return null;
 
   return (
     <section
@@ -48,8 +53,8 @@ export function AiLabApp() {
         {/* Workflow Selector Tabs + Run Trigger */}
         <div className="flex flex-wrap items-center justify-between gap-gutter-md">
           <div className="flex flex-wrap items-center gap-gutter-xs" role="tablist" aria-label="Pilih Alur Otomasi">
-            {WORKFLOW_LIST.map((wf) => {
-              const isSelected = wf.id === selectedId;
+            {data.workflows.map((wf) => {
+              const isSelected = wf.id === activeWorkflow.id;
               return (
                 <button
                   key={wf.id}

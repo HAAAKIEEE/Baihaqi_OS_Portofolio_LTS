@@ -8,10 +8,11 @@ export type AppId =
   | 'github'
   | 'contact'
   | 'settings'
-  | 'ai-search';
+  | 'ai-search'
+  | 'admin';
 
 export interface DockAppItem {
-  id: Exclude<AppId, 'home' | 'settings' | 'ai-search'>;
+  id: Exclude<AppId, 'home' | 'settings' | 'ai-search' | 'admin'>;
   label: string;
   icon: string;
   accentClass: string;
@@ -81,4 +82,5 @@ export const APP_PATHS: Record<AppId, { desktop: string; mobile: string }> = {
   contact: { desktop: 'baihaqi@linux-os:~/kontak', mobile: '~/kontak.sh' },
   settings: { desktop: 'baihaqi@linux-os:~/pengaturan', mobile: '~/settings.conf' },
   'ai-search': { desktop: 'baihaqi@linux-os:~/pencarian', mobile: 'baihaqi@os' },
+  admin: { desktop: 'root@linux-os:/admin', mobile: '~/admin' },
 };

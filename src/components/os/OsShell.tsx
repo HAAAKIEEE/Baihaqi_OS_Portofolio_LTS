@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { OsProvider, useOs, type WindowAppId } from '@/context/OsContext';
+import { PortfolioDataProvider } from '@/context/PortfolioDataContext';
 import { CosmicWallpaper } from '@/components/os/CosmicWallpaper';
 import { TopBar } from '@/components/os/TopBar';
 import { BottomBar } from '@/components/os/BottomBar';
@@ -18,6 +19,7 @@ import { SkillsApp } from '@/components/apps/SkillsApp';
 import { GitHubApp } from '@/components/apps/GitHubApp';
 import { ContactApp } from '@/components/apps/ContactApp';
 import { SettingsApp } from '@/components/apps/SettingsApp';
+import { AdminPanelApp } from '@/components/apps/AdminPanelApp';
 
 function renderWindowApp(id: WindowAppId) {
   switch (id) {
@@ -39,6 +41,8 @@ function renderWindowApp(id: WindowAppId) {
       return <SettingsApp />;
     case 'ai-search':
       return <AiSearchApp />;
+    case 'admin':
+      return <AdminPanelApp />;
   }
 }
 
@@ -85,8 +89,10 @@ function OsWorkspace() {
 
 export function OsShell() {
   return (
-    <OsProvider>
-      <OsWorkspace />
-    </OsProvider>
+    <PortfolioDataProvider>
+      <OsProvider>
+        <OsWorkspace />
+      </OsProvider>
+    </PortfolioDataProvider>
   );
 }
