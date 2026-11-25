@@ -299,7 +299,10 @@ function retrieveRelevantChunks(query: string, chunks: KnowledgeChunk[]): Knowle
 async function handleRagAsk(request: Request, env: Env): Promise<Response> {
   const startedAt = Date.now();
   try {
-    const body = (await request.json()) as { query?: string };
+    const body = (await request.json()) as {
+      query?: string;
+      history?: Array<{ role?: string; content?: string }>;
+    };
     const query = (body.query ?? '').trim();
     if (!query) {
       return jsonResponse({ ok: false, error: 'Query is required' }, 400);
@@ -322,7 +325,7 @@ async function handleRagAsk(request: Request, env: Env): Promise<Response> {
 
     const systemPrompt = [
       'Kamu adalah Asisten AI resmi di portofolio Baihaqi OS.',
-      'Jawab pertanyaan pengunjung secara akurat, ringkas, dan profesional dalam Bahasa Indonesia HANYA berdasarkan konteks portofolio berikut.',
+      'Jawab pertanyaan pengunjung secara akurat, ringkas, ramah, dan profesional dalam Bahasa Indonesia HANYA berdasarkan konteks portofolio berikut.',
       'Jika informasi tidak ada di konteks, katakan dengan jujur dan arahkan ke kontak WhatsApp (089530203497) atau email (haqi20082004@gmail.com).',
       'Kembalikan jawaban WAJIB dalam format JSON valid tanpa teks tambahan di luar JSON:',
       '{"summary":"Ringkasan jawaban 1-2 kalimat.","bullets":[{"title":"Poin singkat","detail":"Penjelasan ringkas"}],"followUps":[{"label":"Pertanyaan lanjutan singkat","question":"Kalimat pertanyaan lanjutan"}]}',
@@ -330,6 +333,21 @@ async function handleRagAsk(request: Request, env: Env): Promise<Response> {
       'KONTEKS PORTOFOLIO:',
       contextBlock,
     ].join('\n');
+
+    const historyMessages = Array.isArray(body.history)
+      ? body.history
+          .filter(
+            (m) =>
+              (m?.role === 'user' || m?.role === 'assistant') &&
+              typeof m.content === 'string' &&
+              m.content.trim().length > 0
+          )
+          .slice(-6)
+          .map((m) => ({
+            role: m.role as 'user' | 'assistant',
+            content: String(m.content).slice(0, 600),
+          }))
+      : [];
 
     const llmRes = await fetch(HELIPOD_API_URL, {
       method: 'POST',
@@ -343,6 +361,7 @@ async function handleRagAsk(request: Request, env: Env): Promise<Response> {
         max_tokens: 700,
         messages: [
           { role: 'system', content: systemPrompt },
+          ...historyMessages,
           { role: 'user', content: query },
         ],
       }),
