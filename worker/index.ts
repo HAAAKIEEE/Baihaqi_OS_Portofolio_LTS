@@ -338,16 +338,13 @@ async function handleRagAsk(request: Request, env: Env): Promise<Response> {
 
     const systemPrompt = [
       'Kamu adalah asisten AI di portofolio interaktif Baihaqi OS.',
-      'Gaya bicara: santai, akrab, ramah, natural (Bahasa Indonesia sehari-hari yang sopan, tidak kaku seperti robot).',
+      'Gaya bicara: santai, akrab, ramah, natural (Bahasa Indonesia sehari-hari yang sopan, tidak kaku).',
       '',
       'Aturan menjawab:',
-      '1. Jika user hanya menyapa atau basa-basi (misal: "halo", "hai", "p", "apa kabar", "makasih"): balas dengan santai dan ramah, tawarkan bantuan seputar portofolio Baihaqi. Set "isGreetingOrOutOfScope": true dan "bullets": [].',
-      '2. Jika pertanyaan relevan dengan Baihaqi (profil, pengalaman kerja, pendidikan, proyek GitHub/manual, skill Laravel/Livewire/Tailwind/MySQL/n8n/AI, CV, atau kontak): jawab santai tapi tetap akurat HANYA berdasarkan KONTEKS PORTOFOLIO di bawah. Set "isGreetingOrOutOfScope": false.',
-      '3. Jika pertanyaan jelas di luar konteks portofolio Baihaqi (misal: resep masakan, matematika, cuaca, gosip, coding umum yang tidak terkait Baihaqi): tolak dengan santai dan ramah bahwa itu di luar konteks portofolio Baihaqi, lalu arahkan kembali ke topik seputar Baihaqi. Set "isGreetingOrOutOfScope": true dan "bullets": [].',
-      '4. Jangan mengarang fakta yang tidak ada di konteks.',
-      '',
-      'Kembalikan jawaban WAJIB dalam JSON valid tanpa teks lain di luar JSON (maksimal 3 bullets singkat):',
-      '{"isGreetingOrOutOfScope":false,"summary":"Jawaban santai & ringkas.","bullets":[{"title":"Poin","detail":"Penjelasan singkat"}],"followUps":[{"label":"Teks tombol singkat","question":"Pertanyaan lanjutan"}]}',
+      '1. Jika user hanya menyapa atau basa-basi (misal: "halo", "hai", "apa kabar", "makasih"): balas singkat & santai 1-2 kalimat saja tanpa bullet points. Akhiri baris terakhir persis dengan: [META:NO_SOURCES]',
+      '2. Jika pertanyaan relevan dengan Baihaqi (profil, pengalaman kerja, pendidikan, proyek GitHub/manual, skill Laravel/Livewire/Tailwind/MySQL/n8n/AI, CV, atau kontak): jawab santai tapi akurat HANYA berdasarkan KONTEKS PORTOFOLIO. Boleh tambahkan maksimal 3 baris poin dengan format persis: `- **Judul Poin** — Penjelasan singkat`',
+      '3. Jika pertanyaan di luar konteks portofolio Baihaqi (resep, matematika, cuaca, dll): tolak dengan santai bahwa itu di luar konteks portofolio Baihaqi dan arahkan kembali ke topik seputar Baihaqi, tanpa bullet points. Akhiri baris terakhir persis dengan: [META:NO_SOURCES]',
+      '4. Jangan pernah membalas dengan JSON atau blok kode. Balas dengan teks biasa yang rapi.',
       '',
       'KONTEKS PORTOFOLIO:',
       contextBlock,
@@ -398,33 +395,31 @@ async function handleRagAsk(request: Request, env: Env): Promise<Response> {
       choices?: Array<{ message?: { content?: string } }>;
     };
     const rawContent = llmJson.choices?.[0]?.message?.content?.trim() ?? '';
-    const cleanedJson = rawContent.replace(/^```json\s*/i, '').replace(/```$/i, '').trim();
+    const isNoSources = /\[META:NO_SOURCES\]/i.test(rawContent);
+    const cleanText = rawContent.replace(/\[META:NO_SOURCES\]/gi, '').trim();
 
-    let parsed: {
-      isGreetingOrOutOfScope?: boolean;
-      summary?: string;
-      bullets?: Array<{ title?: string; detail?: string }>;
-      followUps?: Array<{ label?: string; question?: string }>;
-    } | null = null;
+    const lines = cleanText.split('\n').map((l) => l.trim()).filter(Boolean);
+    const summaryLines: string[] = [];
+    const bullets: Array<{ title: string; detail: string }> = [];
 
-    try {
-      const jsonMatch = cleanedJson.match(/\{[\s\S]*\}/);
-      parsed = JSON.parse(jsonMatch ? jsonMatch[0] : cleanedJson);
-    } catch {
-      const summaryMatch = cleanedJson.match(/"summary"\s*:\s*"((?:[^"\\]|\\.)*)"/);
-      const extractedSummary = summaryMatch
-        ? summaryMatch[1].replace(/\\"/g, '"').replace(/\\n/g, '\n')
-        : rawContent.replace(/^\s*\{[\s\S]*?"summary"\s*:\s*"?/, '').trim();
-      parsed = {
-        isGreetingOrOutOfScope: /"isGreetingOrOutOfScope"\s*:\s*true/.test(cleanedJson),
-        summary: extractedSummary || 'Halo! Ada yang mau kamu tanyain soal portofolio Baihaqi?',
-        bullets: [],
-        followUps: [],
-      };
+    for (const line of lines) {
+      const bulletMatch = line.match(/^[-*•]\s+\*\*(.+?)\*\*\s*(?:[—–:-]\s*)?(.*)$/);
+      if (bulletMatch) {
+        bullets.push({
+          title: bulletMatch[1].trim(),
+          detail: bulletMatch[2].trim() || bulletMatch[1].trim(),
+        });
+      } else {
+        summaryLines.push(line);
+      }
     }
 
+    const summary =
+      summaryLines.join(' ').trim() ||
+      'Halo! 👋 Ada yang mau kamu tanyain seputar portofolio Baihaqi?';
+
     const elapsedSec = ((Date.now() - startedAt) / 1000).toFixed(1);
-    const showSources = !parsed?.isGreetingOrOutOfScope;
+    const showSources = !isNoSources;
 
     return jsonResponse({
       ok: true,
@@ -434,13 +429,8 @@ async function handleRagAsk(request: Request, env: Env): Promise<Response> {
         key: 'ai_projects',
         question: query,
         badge: `${elapsedSec}s • RAG (${HELIPOD_MODEL})`,
-        summary: parsed?.summary || rawContent,
-        bullets: Array.isArray(parsed?.bullets)
-          ? parsed.bullets
-              .filter((b) => b?.title && b?.detail)
-              .slice(0, 4)
-              .map((b) => ({ title: String(b.title), detail: String(b.detail) }))
-          : [],
+        summary,
+        bullets: bullets.slice(0, 4),
         sources: showSources
           ? retrieved.slice(0, 2).map((c) => ({
               projectId: c.appId,
@@ -450,28 +440,18 @@ async function handleRagAsk(request: Request, env: Env): Promise<Response> {
               accent: c.accent,
             }))
           : [],
-        followUps:
-          Array.isArray(parsed?.followUps) && parsed.followUps.length > 0
-            ? parsed.followUps
-                .filter((f) => f?.label && f?.question)
-                .slice(0, 2)
-                .map((f, idx) => ({
-                  key: idx === 0 ? 'stack' : 'availability',
-                  label: String(f.label),
-                  question: String(f.question),
-                }))
-            : [
-                {
-                  key: 'stack',
-                  label: 'Apa stack teknologi andalan Baihaqi?',
-                  question: 'Apa stack teknologi andalan Baihaqi?',
-                },
-                {
-                  key: 'availability',
-                  label: 'Bagaimana cara menghubungi Baihaqi?',
-                  question: 'Bagaimana cara menghubungi Baihaqi?',
-                },
-              ],
+        followUps: [
+          {
+            key: 'stack',
+            label: 'Apa stack teknologi andalan Baihaqi?',
+            question: 'Apa stack teknologi andalan Baihaqi?',
+          },
+          {
+            key: 'availability',
+            label: 'Bagaimana cara menghubungi Baihaqi?',
+            question: 'Bagaimana cara menghubungi Baihaqi?',
+          },
+        ],
       },
     });
   } catch (err) {

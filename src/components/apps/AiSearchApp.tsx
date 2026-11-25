@@ -127,7 +127,7 @@ export function AiSearchApp() {
   return (
     <section
       aria-label="Chat Asisten AI Baihaqi OS"
-      className={`w-full max-w-4xl mx-auto h-[72vh] md:h-[75vh] rounded-xl bg-dark-surface-container-lowest/95 ${blur2xl} border border-dark-outline-variant/70 shadow-2xl overflow-hidden flex flex-col animate-surface-enter`}
+      className={`w-full max-w-4xl mx-auto h-full md:h-[min(35rem,calc(100vh-12.5rem))] rounded-xl bg-dark-surface-container-lowest/95 ${blur2xl} border border-dark-outline-variant/70 shadow-2xl overflow-hidden flex flex-col animate-surface-enter`}
     >
       <WindowTitleBar
         appId="ai-search"
