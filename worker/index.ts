@@ -346,7 +346,7 @@ async function handleRagAsk(request: Request, env: Env): Promise<Response> {
       '3. Jika pertanyaan jelas di luar konteks portofolio Baihaqi (misal: resep masakan, matematika, cuaca, gosip, coding umum yang tidak terkait Baihaqi): tolak dengan santai dan ramah bahwa itu di luar konteks portofolio Baihaqi, lalu arahkan kembali ke topik seputar Baihaqi. Set "isGreetingOrOutOfScope": true dan "bullets": [].',
       '4. Jangan mengarang fakta yang tidak ada di konteks.',
       '',
-      'Kembalikan jawaban WAJIB dalam JSON valid tanpa teks lain di luar JSON:',
+      'Kembalikan jawaban WAJIB dalam JSON valid tanpa teks lain di luar JSON (maksimal 3 bullets singkat):',
       '{"isGreetingOrOutOfScope":false,"summary":"Jawaban santai & ringkas.","bullets":[{"title":"Poin","detail":"Penjelasan singkat"}],"followUps":[{"label":"Teks tombol singkat","question":"Pertanyaan lanjutan"}]}',
       '',
       'KONTEKS PORTOFOLIO:',
@@ -408,11 +408,16 @@ async function handleRagAsk(request: Request, env: Env): Promise<Response> {
     } | null = null;
 
     try {
-      parsed = JSON.parse(cleanedJson);
+      const jsonMatch = cleanedJson.match(/\{[\s\S]*\}/);
+      parsed = JSON.parse(jsonMatch ? jsonMatch[0] : cleanedJson);
     } catch {
+      const summaryMatch = cleanedJson.match(/"summary"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+      const extractedSummary = summaryMatch
+        ? summaryMatch[1].replace(/\\"/g, '"').replace(/\\n/g, '\n')
+        : rawContent.replace(/^\s*\{[\s\S]*?"summary"\s*:\s*"?/, '').trim();
       parsed = {
-        isGreetingOrOutOfScope: false,
-        summary: rawContent || 'Halo! Ada yang mau kamu tanyain soal portofolio Baihaqi?',
+        isGreetingOrOutOfScope: /"isGreetingOrOutOfScope"\s*:\s*true/.test(cleanedJson),
+        summary: extractedSummary || 'Halo! Ada yang mau kamu tanyain soal portofolio Baihaqi?',
         bullets: [],
         followUps: [],
       };
