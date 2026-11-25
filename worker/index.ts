@@ -1,6 +1,6 @@
 interface KvNamespaceBinding {
   get(key: string, type?: 'text' | 'json'): Promise<unknown>;
-  put(key: string, value: string): Promise<void>;
+  put(key: string, value: string, options?: { expirationTtl?: number }): Promise<void>;
   delete(key: string): Promise<void>;
 }
 
@@ -16,8 +16,9 @@ export interface Env {
 }
 
 const KV_KEY = 'portfolio_data';
+const GH_CACHE_KEY = 'gh_repos_cache_v1';
 const HELIPOD_API_URL = 'https://ai.helipod.io/v1/chat/completions';
-const HELIPOD_MODEL = 'qwen3.7-flash';
+const HELIPOD_MODEL = 'deepseek-v4.1-flash';
 
 function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -143,10 +144,17 @@ interface GitHubRepoLite {
   html_url: string;
 }
 
-async function fetchGitHubReposSafe(): Promise<GitHubRepoLite[]> {
+async function fetchGitHubReposSafe(kv?: KvNamespaceBinding): Promise<GitHubRepoLite[]> {
   try {
+    if (kv) {
+      const cached = await kv.get(GH_CACHE_KEY, 'json');
+      if (Array.isArray(cached)) {
+        return cached as GitHubRepoLite[];
+      }
+    }
+
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 3500);
+    const timer = setTimeout(() => controller.abort(), 3000);
     const res = await fetch('https://api.github.com/users/HAAAKIEEE/repos?sort=updated&per_page=10', {
       headers: {
         Accept: 'application/vnd.github+json',
@@ -157,7 +165,12 @@ async function fetchGitHubReposSafe(): Promise<GitHubRepoLite[]> {
     clearTimeout(timer);
     if (!res.ok) return [];
     const data = await res.json();
-    return Array.isArray(data) ? (data as GitHubRepoLite[]) : [];
+    if (!Array.isArray(data)) return [];
+
+    if (kv) {
+      await kv.put(GH_CACHE_KEY, JSON.stringify(data), { expirationTtl: 900 });
+    }
+    return data as GitHubRepoLite[];
   } catch {
     return [];
   }
@@ -314,7 +327,7 @@ async function handleRagAsk(request: Request, env: Env): Promise<Response> {
 
     const [kvData, ghRepos] = await Promise.all([
       env.PORTFOLIO_KV ? (env.PORTFOLIO_KV.get(KV_KEY, 'json') as Promise<StoredPortfolio | null>) : Promise.resolve(null),
-      fetchGitHubReposSafe(),
+      fetchGitHubReposSafe(env.PORTFOLIO_KV),
     ]);
 
     const allChunks = buildKnowledgeChunks(kvData, ghRepos);

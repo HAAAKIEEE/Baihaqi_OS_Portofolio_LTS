@@ -33,7 +33,7 @@ export function AiSearchApp() {
   const [inputValue, setInputValue] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
-  const [latestBadge, setLatestBadge] = useState('RAG • qwen3.7-flash');
+  const [latestBadge, setLatestBadge] = useState('RAG • deepseek-v4.1-flash');
   const lastHandledQueryRef = useRef<string | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -119,7 +119,7 @@ export function AiSearchApp() {
 
   const handleNewChat = () => {
     setMessages([]);
-    setLatestBadge('RAG • qwen3.7-flash');
+    setLatestBadge('RAG • deepseek-v4.1-flash');
   };
 
   const blur2xl = settings.glassmorphism ? 'backdrop-blur-2xl' : '';
