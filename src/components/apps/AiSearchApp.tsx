@@ -2,17 +2,50 @@
 
 import React, { useEffect, useState } from 'react';
 import { matchPortfolioQuestion, type QaAnswer, type QaFollowUp } from '@/data/qa';
+import { type AppId } from '@/data/profile';
 import { useOs } from '@/context/OsContext';
 import { WindowTitleBar } from '@/components/os/WindowTitleBar';
 
+const APP_IDS = new Set<string>(['about', 'skills', 'projects', 'github', 'contact', 'ai-lab', 'terminal']);
+
 export function AiSearchApp() {
-  const { aiSearchQuery, askAi, openCaseStudy, settings } = useOs();
+  const { aiSearchQuery, askAi, openApp, openCaseStudy, settings } = useOs();
   const [inputValue, setInputValue] = useState(aiSearchQuery);
   const [answer, setAnswer] = useState<QaAnswer>(() => matchPortfolioQuestion(aiSearchQuery));
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setInputValue(aiSearchQuery);
-    setAnswer(matchPortfolioQuestion(aiSearchQuery));
+    let cancelled = false;
+
+    const queryRag = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch('/api/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: aiSearchQuery }),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const payload = (await res.json()) as { ok?: boolean; answer?: QaAnswer };
+        if (!cancelled && payload.ok && payload.answer) {
+          setAnswer(payload.answer);
+          return;
+        }
+      } catch {
+        // Fallback to local QA when running offline / static dev
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+      if (!cancelled) {
+        setAnswer(matchPortfolioQuestion(aiSearchQuery));
+      }
+    };
+
+    queryRag();
+    return () => {
+      cancelled = true;
+    };
   }, [aiSearchQuery]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -37,8 +70,8 @@ export function AiSearchApp() {
     >
       <WindowTitleBar
         appId="ai-search"
-        title="ai-search — Ringkasan Jawaban & Asisten AI"
-        badgeText={answer.badge}
+        title="ai-search — Asisten RAG Baihaqi OS"
+        badgeText={loading ? 'Memproses RAG...' : answer.badge}
       />
 
       <div className="p-gutter-lg sm:p-gutter-xl flex flex-col gap-gutter-lg">
@@ -104,7 +137,7 @@ export function AiSearchApp() {
             </h1>
           </div>
           <p data-design-text-token="body-md" className="font-body text-body-sm sm:text-body-md text-dark-on-surface text-pretty">
-            {answer.summary}
+            {loading ? 'Mengambil konteks portofolio & menyusun jawaban dengan qwen3.7-flash...' : answer.summary}
           </p>
           <ul className="space-y-gutter-xs pl-gutter-md font-body text-body-sm sm:text-body-md text-dark-on-surface-variant list-disc">
             {answer.bullets.map((bullet) => (
@@ -127,7 +160,13 @@ export function AiSearchApp() {
               <button
                 key={src.file}
                 type="button"
-                onClick={() => openCaseStudy(src.projectId)}
+                onClick={() => {
+                  if (APP_IDS.has(src.projectId)) {
+                    openApp(src.projectId as AppId);
+                  } else {
+                    openCaseStudy(src.projectId);
+                  }
+                }}
                 className="text-left h-full p-gutter-md rounded-lg bg-dark-surface-container-low/80 border border-dark-outline-variant/50 hover:border-dark-primary transition-colors duration-state-change flex flex-col gap-gutter-xs"
               >
                 <div className="flex items-center justify-between gap-gutter-sm w-full">
