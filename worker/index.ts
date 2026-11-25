@@ -324,11 +324,17 @@ async function handleRagAsk(request: Request, env: Env): Promise<Response> {
       .join('\n\n');
 
     const systemPrompt = [
-      'Kamu adalah Asisten AI resmi di portofolio Baihaqi OS.',
-      'Jawab pertanyaan pengunjung secara akurat, ringkas, ramah, dan profesional dalam Bahasa Indonesia HANYA berdasarkan konteks portofolio berikut.',
-      'Jika informasi tidak ada di konteks, katakan dengan jujur dan arahkan ke kontak WhatsApp (089530203497) atau email (haqi20082004@gmail.com).',
-      'Kembalikan jawaban WAJIB dalam format JSON valid tanpa teks tambahan di luar JSON:',
-      '{"summary":"Ringkasan jawaban 1-2 kalimat.","bullets":[{"title":"Poin singkat","detail":"Penjelasan ringkas"}],"followUps":[{"label":"Pertanyaan lanjutan singkat","question":"Kalimat pertanyaan lanjutan"}]}',
+      'Kamu adalah asisten AI di portofolio interaktif Baihaqi OS.',
+      'Gaya bicara: santai, akrab, ramah, natural (Bahasa Indonesia sehari-hari yang sopan, tidak kaku seperti robot).',
+      '',
+      'Aturan menjawab:',
+      '1. Jika user hanya menyapa atau basa-basi (misal: "halo", "hai", "p", "apa kabar", "makasih"): balas dengan santai dan ramah, tawarkan bantuan seputar portofolio Baihaqi. Set "isGreetingOrOutOfScope": true dan "bullets": [].',
+      '2. Jika pertanyaan relevan dengan Baihaqi (profil, pengalaman kerja, pendidikan, proyek GitHub/manual, skill Laravel/Livewire/Tailwind/MySQL/n8n/AI, CV, atau kontak): jawab santai tapi tetap akurat HANYA berdasarkan KONTEKS PORTOFOLIO di bawah. Set "isGreetingOrOutOfScope": false.',
+      '3. Jika pertanyaan jelas di luar konteks portofolio Baihaqi (misal: resep masakan, matematika, cuaca, gosip, coding umum yang tidak terkait Baihaqi): tolak dengan santai dan ramah bahwa itu di luar konteks portofolio Baihaqi, lalu arahkan kembali ke topik seputar Baihaqi. Set "isGreetingOrOutOfScope": true dan "bullets": [].',
+      '4. Jangan mengarang fakta yang tidak ada di konteks.',
+      '',
+      'Kembalikan jawaban WAJIB dalam JSON valid tanpa teks lain di luar JSON:',
+      '{"isGreetingOrOutOfScope":false,"summary":"Jawaban santai & ringkas.","bullets":[{"title":"Poin","detail":"Penjelasan singkat"}],"followUps":[{"label":"Teks tombol singkat","question":"Pertanyaan lanjutan"}]}',
       '',
       'KONTEKS PORTOFOLIO:',
       contextBlock,
@@ -382,6 +388,7 @@ async function handleRagAsk(request: Request, env: Env): Promise<Response> {
     const cleanedJson = rawContent.replace(/^```json\s*/i, '').replace(/```$/i, '').trim();
 
     let parsed: {
+      isGreetingOrOutOfScope?: boolean;
       summary?: string;
       bullets?: Array<{ title?: string; detail?: string }>;
       followUps?: Array<{ label?: string; question?: string }>;
@@ -391,13 +398,15 @@ async function handleRagAsk(request: Request, env: Env): Promise<Response> {
       parsed = JSON.parse(cleanedJson);
     } catch {
       parsed = {
-        summary: rawContent || 'Berikut informasi dari portofolio Baihaqi.',
+        isGreetingOrOutOfScope: false,
+        summary: rawContent || 'Halo! Ada yang mau kamu tanyain soal portofolio Baihaqi?',
         bullets: [],
         followUps: [],
       };
     }
 
     const elapsedSec = ((Date.now() - startedAt) / 1000).toFixed(1);
+    const showSources = !parsed?.isGreetingOrOutOfScope;
 
     return jsonResponse({
       ok: true,
@@ -414,13 +423,15 @@ async function handleRagAsk(request: Request, env: Env): Promise<Response> {
               .slice(0, 4)
               .map((b) => ({ title: String(b.title), detail: String(b.detail) }))
           : [],
-        sources: retrieved.slice(0, 2).map((c) => ({
-          projectId: c.appId,
-          file: c.file,
-          stack: c.stack,
-          icon: c.icon,
-          accent: c.accent,
-        })),
+        sources: showSources
+          ? retrieved.slice(0, 2).map((c) => ({
+              projectId: c.appId,
+              file: c.file,
+              stack: c.stack,
+              icon: c.icon,
+              accent: c.accent,
+            }))
+          : [],
         followUps:
           Array.isArray(parsed?.followUps) && parsed.followUps.length > 0
             ? parsed.followUps
